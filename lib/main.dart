@@ -1,21 +1,14 @@
+import 'package:daraz_app_scroll/utils/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'providers/auth_provider.dart';
-import 'providers/products_provider.dart';
+import 'package:get/get.dart';
+import 'controller/auth_controller.dart';
+import 'controller/products_controller.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/profile_screen.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ProductsProvider()),
-      ],
-      child: const DarazApp(),
-    ),
-  );
+  runApp(const DarazApp());
 }
 
 class DarazApp extends StatelessWidget {
@@ -23,26 +16,24 @@ class DarazApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Daraz',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFFF6D00),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-        // cardTheme: const CardTheme(
-        //   color: Colors.white,
-        //   surfaceTintColor: Colors.transparent,
-        // ),
+        scaffoldBackgroundColor: AppColors.whiteColor,
       ),
+      initialBinding: BindingsBuilder(() {
+        Get.put(AuthController());
+        Get.put(ProductsController());
+      }),
       initialRoute: '/login',
-      routes: {
-        '/login': (_) => const LoginScreen(),
-        '/home':  (_) => const HomeScreen(),
-        '/profile': (_) => const ProfileScreen(),
-      },
+      getPages: [
+        GetPage(name: '/login', page: () => const LoginScreen()),
+        GetPage(name: '/home', page: () => const HomeScreen()),
+        GetPage(name: '/profile', page: () => const ProfileScreen()),
+      ],
     );
   }
 }

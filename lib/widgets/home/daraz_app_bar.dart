@@ -4,37 +4,34 @@ import 'promo_chip.dart';
 
 class DarazAppBar extends StatelessWidget {
   final User? user;
-  final bool  innerBoxIsScrolled;
+  final bool innerBoxIsScrolled;
 
-  const DarazAppBar({
-    super.key,
-    this.user,
-    required this.innerBoxIsScrolled,
-  });
+  const DarazAppBar({super.key, this.user, required this.innerBoxIsScrolled});
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight:            155,
-      floating:                  true,
-      pinned:                    false,
-      snap:                      true,
-      forceElevated:             innerBoxIsScrolled,
-      backgroundColor:           const Color(0xFFFF6D00),
-      surfaceTintColor:          Colors.transparent,
+      expandedHeight: 155,
+      floating: true,
+      pinned: false,
+      snap: true,
+      forceElevated: innerBoxIsScrolled,
+      backgroundColor: const Color(0xFFFF6D00),
+      surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
-      elevation:                 0,
+      elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.pin,
-        background:   _AppBarBackground(user: user),
+        background: _AppBarBackground(user: user),
       ),
     );
   }
 }
 
-// ── Background content of the flexible space ─────────────────────
+/// ── Background content of the flexible space ─────────────────────
 class _AppBarBackground extends StatelessWidget {
   final User? user;
+
   const _AppBarBackground({this.user});
 
   @override
@@ -43,8 +40,8 @@ class _AppBarBackground extends StatelessWidget {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFFF6D00), Color(0xFFE65100)],
-          begin:  Alignment.topLeft,
-          end:    Alignment.bottomRight,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
       child: SafeArea(
@@ -67,9 +64,10 @@ class _AppBarBackground extends StatelessWidget {
   }
 }
 
-// ── Greeting row ──────────────────────────────────────────────────
+/// ── Greeting row ──────────────────────────────────────────────────
 class _GreetingRow extends StatelessWidget {
   final User? user;
+
   const _GreetingRow({this.user});
 
   @override
@@ -84,14 +82,14 @@ class _GreetingRow extends StatelessWidget {
         GestureDetector(
           onTap: () => Navigator.pushNamed(context, '/profile'),
           child: CircleAvatar(
-            radius:          17,
+            radius: 17,
             backgroundColor: Colors.white24,
             child: Text(
               initial,
               style: const TextStyle(
-                color:      Colors.white,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize:   15,
+                fontSize: 15,
               ),
             ),
           ),
@@ -104,9 +102,9 @@ class _GreetingRow extends StatelessWidget {
               Text(
                 'Hello, $name 👋',
                 style: const TextStyle(
-                  color:      Colors.white,
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize:   15,
+                  fontSize: 15,
                 ),
               ),
               const Text(
@@ -116,20 +114,13 @@ class _GreetingRow extends StatelessWidget {
             ],
           ),
         ),
-        GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/profile'),
-          child: const Icon(
-            Icons.shopping_cart_outlined,
-            color: Colors.white,
-            size:  24,
-          ),
-        ),
+        const Icon(Icons.shopping_cart_outlined, color: Colors.white, size: 24),
       ],
     );
   }
 }
 
-// ── Search bar ────────────────────────────────────────────────────
+/// ── Search bar ────────────────────────────────────────────────────
 class _SearchBar extends StatelessWidget {
   const _SearchBar();
 
@@ -138,13 +129,13 @@ class _SearchBar extends StatelessWidget {
     return Container(
       height: 42,
       decoration: BoxDecoration(
-        color:        Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color:      Colors.black.withOpacity(0.08),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 8,
-            offset:     const Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -156,26 +147,26 @@ class _SearchBar extends StatelessWidget {
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText:       'Search in Daraz...',
-                hintStyle:      TextStyle(color: Colors.grey[400], fontSize: 13),
-                border:         InputBorder.none,
-                isDense:        true,
+                hintText: 'Search in Daraz...',
+                hintStyle: TextStyle(color: Colors.grey[400], fontSize: 13),
+                border: InputBorder.none,
+                isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
             ),
           ),
           Container(
-            margin:  const EdgeInsets.all(5),
+            margin: const EdgeInsets.all(5),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
             decoration: BoxDecoration(
-              color:        const Color(0xFFFF6D00),
+              color: const Color(0xFFFF6D00),
               borderRadius: BorderRadius.circular(6),
             ),
             child: const Text(
               'Search',
               style: TextStyle(
-                color:      Colors.white,
-                fontSize:   12,
+                color: Colors.white,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -186,7 +177,7 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
-// ── Promo chips row ───────────────────────────────────────────────
+/// ── Promo chips row ───────────────────────────────────────────────
 class _PromoRow extends StatelessWidget {
   const _PromoRow();
 
@@ -196,13 +187,13 @@ class _PromoRow extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          PromoChip('🔥 Flash Sale',    Colors.red[700]!),
+          PromoChip('🔥 Flash Sale', Colors.red[700]!),
           const SizedBox(width: 8),
-          PromoChip('🆕 New Arrivals',  Colors.blue[700]!),
+          PromoChip('🆕 New Arrivals', Colors.blue[700]!),
           const SizedBox(width: 8),
           PromoChip('🚚 Free Delivery', Colors.green[700]!),
           const SizedBox(width: 8),
-          PromoChip('💸 Under \$20',    Colors.purple[700]!),
+          PromoChip('💸 Under \$20', Colors.purple[700]!),
         ],
       ),
     );

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controller/products_controller.dart';
 import '../../models/product.dart';
 import '../product_card.dart';
 
 class TabBody extends StatefulWidget {
-  final List<Product>            products;
-  final bool                     loading;
-  final String?                  error;
-  final Future<void> Function()  onRefresh;
+  final List<Product> products;
+  final bool loading;
+  final String? error;
+  final Future<void> Function() onRefresh;
 
   const TabBody({
     super.key,
@@ -20,61 +22,65 @@ class TabBody extends StatefulWidget {
   State<TabBody> createState() => _TabBodyState();
 }
 
-class _TabBodyState extends State<TabBody>
-    with AutomaticKeepAliveClientMixin {
-
-  // Keeps this tab's scroll position alive when switching tabs.
-  // Without this, PageView destroys off-screen tabs and resets scroll.
+class _TabBodyState extends State<TabBody> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // required by AutomaticKeepAliveClientMixin
+    super.build(context);
 
-    // ── Loading state ─────────────────────────────────────────
-    if (widget.loading && widget.products.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(color: Color(0xFFFF6D00)),
+    // ── Use Obx here to directly watch the controller ─────────────
+    // This is the key fix: instead of relying on props passed down
+    // (which don't trigger rebuilds inside AutomaticKeepAlive),
+    // we watch the controller directly so retry always reflects
+    // the latest state.
+    final ctrl = Get.find<ProductsController>();
+
+    return Obx(() {
+      final loading = ctrl.loading.value;
+      final error = ctrl.error.value;
+      final products = widget.products;
+
+      // ── Loading ────────────────────────────────────────────────
+      if (loading && products.isEmpty) {
+        return const Center(
+          child: CircularProgressIndicator(color: Color(0xFFFF6D00)),
+        );
+      }
+
+      // ── Error ──────────────────────────────────────────────────
+      if (error != null && products.isEmpty) {
+        return _ErrorView(message: error, onRetry: widget.onRefresh);
+      }
+
+      // ── Empty ──────────────────────────────────────────────────
+      if (products.isEmpty) {
+        return const _EmptyView();
+      }
+
+      // ── List ───────────────────────────────────────────────────
+      return RefreshIndicator(
+        onRefresh: widget.onRefresh,
+        color: const Color(0xFFFF6D00),
+        displacement: 20,
+        child: ListView.builder(
+          primary: true,
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 8, bottom: 32),
+          itemCount: products.length,
+          cacheExtent: 1200,
+          itemBuilder: (context, i) =>
+              ProductCard(key: ValueKey(products[i].id), product: products[i]),
+        ),
       );
-    }
-
-    // ── Error state ───────────────────────────────────────────
-    if (widget.error != null && widget.products.isEmpty) {
-      return _ErrorView(
-        message:   widget.error!,
-        onRetry:   widget.onRefresh,
-      );
-    }
-
-    // ── Empty state ───────────────────────────────────────────
-    if (widget.products.isEmpty && !widget.loading) {
-      return const _EmptyView();
-    }
-
-    // ── Product list ──────────────────────────────────────────
-    // primary:true connects this ListView to the PrimaryScrollController
-    // that NestedScrollView provides — coordinates header collapse.
-    // AlwaysScrollableScrollPhysics ensures pull-to-refresh fires
-    // even when items don't fill the screen.
-    return RefreshIndicator(
-      onRefresh:    widget.onRefresh,
-      color:        const Color(0xFFFF6D00),
-      displacement: 20,
-      child: ListView.builder(
-        primary:     true,
-        physics:     const AlwaysScrollableScrollPhysics(),
-        padding:     const EdgeInsets.only(top: 8, bottom: 32),
-        itemCount:   widget.products.length,
-        itemBuilder: (_, i) => ProductCard(product: widget.products[i]),
-      ),
-    );
+    });
   }
 }
 
 // ── Error view ────────────────────────────────────────────────────
 class _ErrorView extends StatelessWidget {
-  final String               message;
+  final String message;
   final Future<void> Function() onRetry;
 
   const _ErrorView({required this.message, required this.onRetry});
@@ -92,27 +98,28 @@ class _ErrorView extends StatelessWidget {
             Text(
               'Could not load products',
               style: TextStyle(
-                color:      Colors.grey[500],
-                fontSize:   15,
+                color: Colors.grey[500],
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               message,
-              style:     TextStyle(color: Colors.grey[400], fontSize: 12),
+              style: TextStyle(color: Colors.grey[400], fontSize: 12),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: onRetry,
-              icon:      const Icon(Icons.refresh),
-              label:     const Text('Retry'),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFF6D00),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ],
