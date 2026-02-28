@@ -125,14 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Welcome back, Rakibul 👋',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey[500],
-                          ),
-                        ),
                         const SizedBox(height: 24),
 
                         TextFormField(

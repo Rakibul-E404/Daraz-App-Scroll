@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import '../../models/user.dart';
 import 'promo_chip.dart';
 
@@ -80,7 +82,7 @@ class _GreetingRow extends StatelessWidget {
     return Row(
       children: [
         GestureDetector(
-          onTap: () => Navigator.pushNamed(context, '/profile'),
+          onTap: () => Get.toNamed('/profile'),
           child: CircleAvatar(
             radius: 17,
             backgroundColor: Colors.white24,
